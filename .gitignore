@@ -1,0 +1,58 @@
+# Ignore Gradle
+/.gradle/
+/build/
+
+# Ignore IntelliJ IDEA
+/out/
+/*.iml
+engine/*.iml
+/*.ipr
+/*.iws
+
+# Ignore Eclipse
+/.checkstyle
+/.classpath
+/.project
+/.settings/
+/bin/
+
+# Ignore OS generated files
+*.directory
+*~
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+
+# Ignore output stuff
+*.log
+/SAVED_WORLDS/
+/worlds/
+/screenshots/
+/screens/
+/saves/
+/logs/
+/dev/
+/unittesthome/
+config.cfg
+entityDump.txt
+
+# Ignore natives (extracted to project root during setup)
+/natives/
+
+# Ignore subdirs with their own Git roots
+extensions
+facades
+modules
+libs
+
+# Ignore project stuff, output, etc for mods.
+// TODO: Need to update this to new structure. Might not be needed here with /modules in play
+/mods/*/classes/
+/mods/*/testClasses/
+/mods/*/build/
+/mods/*/.*
