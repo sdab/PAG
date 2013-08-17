@@ -1,0 +1,8 @@
+{
+    "id" : "PAG",
+    "version" : "",
+    "author" : "",
+    "displayName" : "",
+    "description" : "",
+    "dependencies" : []
+}

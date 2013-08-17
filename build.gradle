@@ -1,0 +1,119 @@
+import groovy.json.JsonSlurper
+
+// Simple build file for modules - this template will be copied into new module directories as they are created
+
+apply plugin: 'java'
+apply plugin: 'project-report'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'checkstyle'
+
+// Change the output dir of each module to classes, as this is where Terasology will look when loading modules
+sourceSets {
+    main {
+        java {
+            output.classesDir 'classes'
+        }
+    }
+}
+
+// Generate the module directory structure if missing
+task createSkeleton() {
+    mkdir('assets')
+    mkdir('assets/animations')
+    mkdir('assets/blocks')
+    mkdir('assets/blockTiles')
+    mkdir('assets/fonts')
+    mkdir('assets/materials')
+    mkdir('assets/mesh')
+    mkdir('assets/music')
+    mkdir('assets/prefabs')
+    mkdir('assets/shaders')
+    mkdir('assets/shapes')
+    mkdir('assets/skeletalMesh')
+    mkdir('assets/sounds')
+    mkdir('assets/textures')
+    mkdir('src/main/java')
+    mkdir('src/test/java')
+}
+
+// This task syncs everything in the assets dir into the output dir, used when jarring the module
+task syncAssets(type: Sync) {
+    from 'assets'
+    into 'classes/assets'
+}
+/* DISABLED DUE TO GRADLE-FU-FAIL :-( With this setup the file was never created as the task always was "up-to-date"
+// This task creates a minimal module.txt, if it is missing, from a template
+task createModuleManifest(type: Copy) {
+    println "GOING TO COPY modules.txt from $templatesDir to $projectDir"
+    from templatesDir
+    //into projectDir
+    into 'E:\\Dev\\Terasology\\Git\\Tinker\\HalfWayThere\\Terasology\\modules\\Portals'
+    include 'module.txt'
+    expand(id: project.name)
+}*/
+
+def moduleDepends = [];
+def moduleFile = file('module.txt')
+
+println "DOES moduleFile exist? = " + moduleFile.exists()
+
+// Really the module file should always exist if the module was correctly created or cloned using Gradle
+if (!moduleFile.exists()) {
+    println "Y U NO EXIST MODULE.TXT!"
+    //compileJava.dependsOn createModuleManifest
+    //createSkeleton.dependsOn createModuleManifest
+
+// Otherwise, retrieve dependencies information from it
+} else {
+    def slurper = new JsonSlurper()
+    def moduleConfig = slurper.parseText( file('module.txt').text)
+    moduleDepends = moduleConfig.dependencies;
+}
+
+// Jarring needs to copy module.txt and all the assets into the output
+jar.doFirst {
+    copy {
+        from 'module.txt'
+        into 'classes'
+    }
+}
+jar.dependsOn syncAssets
+
+// Prep an IntelliJ module for the Terasology module
+idea {
+    module {
+
+        // Change around the output specific to the mod a bit
+        inheritOutputDirs = false
+        outputDir = file('classes')
+        testOutputDir = file('testClasses')
+    }
+}
+
+// For Eclipse just make sure the classpath is right
+eclipse {
+    classpath {
+        defaultOutputDir = file('classes')
+    }
+}
+
+// Same repository configuration as root project
+repositories {
+    mavenCentral()
+    maven {
+        url "http://www.movingblocks.net:8081/artifactory/repo"
+    }
+}
+
+// Set dependencies. Note that the dependency information from module.txt is used
+dependencies {
+    println "Dependencies will be " + project(':')
+    compile project(':')
+    testCompile group: 'junit', name: 'junit', version: '4.10'
+    for (dependency in moduleDepends) {
+        println " ... module dependency " + dependency
+        // TODO: Actually needs to pull from modules:[id] - must test and tweak if needed
+        compile project(':mods:' + dependency)
+    }
+}
