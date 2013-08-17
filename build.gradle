@@ -17,6 +17,10 @@ sourceSets {
     }
 }
 
+dependencies {
+    compile group : 'org.antlr', name : 'antlr4', version : '4.1'
+}
+
 // Generate the module directory structure if missing
 task createSkeleton() {
     mkdir('assets')
