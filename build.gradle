@@ -6,7 +6,7 @@ apply plugin: 'java'
 apply plugin: 'project-report'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
-apply plugin: 'checkstyle'
+//apply plugin: 'checkstyle'
 
 // Change the output dir of each module to classes, as this is where Terasology will look when loading modules
 sourceSets {
@@ -112,8 +112,8 @@ repositories {
 
 // Set dependencies. Note that the dependency information from module.txt is used
 dependencies {
-    println "Dependencies will be " + project(':')
-    compile project(':')
+    //println "Dependencies will be " + project(':')
+    //compile project(':')
     testCompile group: 'junit', name: 'junit', version: '4.10'
     for (dependency in moduleDepends) {
         println " ... module dependency " + dependency
